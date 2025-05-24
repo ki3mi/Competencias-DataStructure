@@ -6,7 +6,4 @@ ___|___|___
    |   |
 
 
-git status
-git add .
-git commit -m "Nombre del cambio"
-git push origin main
+Codigo 1
