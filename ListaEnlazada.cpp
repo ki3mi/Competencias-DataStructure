@@ -98,6 +98,32 @@ void searchToList(Nodo* lista, int searchId){
     cout<<"ID: "<<temp->id<<"\n";
     cout<<"Proceso: "<<temp->proceso<<"\n";
 }
+
+void modifyList(Nodo*& lista, int modifyId, int newPriority){
+
+    if(newPriority < 1 || newPriority > 10){
+        cout<<"Prioridad no valida. Solo valores de 1 a 10 \n";
+        return;
+    }
+
+    Nodo* temp = lista;
+
+    while(temp != NULL && temp->id != modifyId){
+        temp = temp->next;
+    }
+
+    if(temp == NULL){
+        cout<<"ID no encontrado \n";
+        return;
+    }
+
+    temp->priority = newPriority;
+
+    cout<<"ID: "<<temp->id<<"\n";
+    cout<<"Proceso: "<<temp->proceso<<"\n";
+    cout<<"Nueva prioridad: "<<temp->priority<<"\n";
+    
+}
 int main(){
 
 }
