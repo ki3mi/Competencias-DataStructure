@@ -77,6 +77,27 @@ void deleteToList(Nodo*& lista, int deleteId){
     cout<<"Proceso: "<<temp->proceso<<"\n";
     delete temp;
 }
+
+void searchToList(Nodo* lista, int searchId){
+    Nodo* temp = lista;
+
+    if(temp == NULL){
+        cout<<"La lista está vacia \n";
+        return;
+    }
+
+    while(temp != NULL && temp->id != searchId){
+        temp = temp->next;
+    }
+
+    if (temp == NULL){
+        cout<<"ID no encontrado \n";
+        return;
+    }
+
+    cout<<"ID: "<<temp->id<<"\n";
+    cout<<"Proceso: "<<temp->proceso<<"\n";
+}
 int main(){
 
 }
