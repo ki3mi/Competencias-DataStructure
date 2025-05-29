@@ -40,6 +40,43 @@ void showList(Nodo* inicio){
     }
     cout<<endl;
 }
+void deleteToList(Nodo*& lista, int deleteId){
+    if(lista == NULL){
+        cout<<"La lista está vacia";
+        return;
+    }
+
+    // Creamos los nodos temporal y anterior para reoganizar la lista
+    Nodo* temp = lista;
+    Nodo* anterior = NULL;
+
+    // Caso en el que el primer nodo es el eliminado (no requiere de anterior)
+    if(temp->id == deleteId){
+        lista = temp->next;
+        cout<<"Nodo eliminado \n";
+        cout<<"ID: "<<temp->id<<"\n";
+        cout<<"Proceso: "<<temp->proceso<<"\n";
+        delete temp; // Liberando espacio de memoria
+        return;
+    }
+    // Buscando nodo por ID y el nodo anterior a ese
+    while(temp != NULL && temp->id != deleteId){
+        anterior = temp;
+        temp = temp->next;
+    }
+    
+    if(temp == NULL){
+        cout<<"Id no encontrado \n";
+        return;
+    }
+
+    // Reenlazando el nodo y eliminando
+    anterior->next = temp->next;
+    cout<<"Nodo eliminado \n";
+    cout<<"ID: "<<temp->id<<"\n";
+    cout<<"Proceso: "<<temp->proceso<<"\n";
+    delete temp;
+}
 int main(){
 
 }
