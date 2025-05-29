@@ -75,8 +75,8 @@ void deleteToList(Nodo*& lista, int deleteId){
     cout<<"Nodo eliminado \n";
     cout<<"ID: "<<temp->id<<"\n";
     cout<<"Proceso: "<<temp->proceso<<"\n";
-    delete temp;
+    delete temp;
 }
-int main(){
+int main(){
 
 }
