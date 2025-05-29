@@ -45,6 +45,19 @@ void desencolarCPU(){
     }
 }
 
+void showCola(){
+    if(estaVacia()){
+        cout<<"La cola del CPU está vacía. \n";
+    }else{
+        cout<<"Procesos en la cola del CPU. \n";
+        for(int i = frente; i <= final; i++){
+            cout<<"proceso: "<<cola[i].proceso<<"\n";
+            cout<<"Prioridad: "<<cola[i].priority<<"\n";
+        }
+        cout<<endl;
+    }
+}
+
 int main(){
     // TAREAS PENDIENTES
     // HACER EL MENÚ Y UNIFICAR LOS CÓDIGOS
