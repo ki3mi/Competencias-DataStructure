@@ -31,8 +31,15 @@ void addToList(Nodo*& lista, int id, string name, int priori){
     }
 }
 
-
-
+void showList(Nodo* inicio){
+    Nodo* temp = inicio;
+    while(temp != NULL){
+        cout<<"ID: "<<temp->id<<"\n";
+        cout<<"Proceso: "<<temp->proceso<<"\n";
+        temp = temp->next;
+    }
+    cout<<endl;
+}
 int main(){
 
 }
