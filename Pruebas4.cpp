@@ -159,7 +159,7 @@ void encolarCPU(Cola proceso){
 }
 
 void desencolarCPU(){
-    if(estaVacia()){ cout<<"La cola del CPU esta vacía\n"; }
+    if(estaVacia()){ cout<<"La cola del CPU esta vacia\n"; }
     else{
         cout<<"Proceso: "<<cola[frente].proceso<<" desencolado.\n";
         frente++;
@@ -168,7 +168,7 @@ void desencolarCPU(){
 }
 
 void showCola(){
-    if(estaVacia()){ cout<<"La cola del CPU está vacía.\n"; }
+    if(estaVacia()){ cout<<"La cola del CPU esta vacia.\n"; }
     else{
         for(int i = frente; i <= final; i++){
             cout<<"Proceso: "<<cola[i].proceso<<"\nPrioridad: "<<cola[i].priority<<"\n";
@@ -180,8 +180,8 @@ void showCola(){
 // FUNCIONES DE PILA
 // =====================
 
-int getMemory(){
-    return top+1/MEM;
+float getMemory(){
+    return (top+1)/MEM;
 }
 
 bool isFull(int prioridad){
@@ -283,6 +283,7 @@ void menu2(){
                     if(cin.fail() || prioridad < 1 || prioridad > 50){
                         limpiarEntrada();
                         cout<<"Prioridad inválida. Debe estar entre 1 y 50.\n";
+                        system("pause");
                         break;
                     }
                     if(isFull(prioridad)){
@@ -333,6 +334,7 @@ void menu3(){
                 if(!isExist(lista, id)){
                     limpiarEntrada();
                     cout<<"ID invalido\n";
+                    system("pause");
                     break;
                 }
                 name = getElement(lista, id);
@@ -357,13 +359,18 @@ void menu3(){
                 showList(lista);
                 cout<<"--------------\n";
                 cout<<"ID a modificar: "; cin>>id;
-                priority = getPriority(lista, id);                
-                cout<<"Nueva prioridad: "; cin>>newPriority;
-                if(cin.fail() || newPriority < 1 || newPriority > 50){
+                if(!isExist(lista, id)  || newPriority < 1 || newPriority > 50){
                     limpiarEntrada();
-                    cout<<"Prioridad invalida. Debe estar entre 1 y 50.\n";
+                    if(!isExist(lista, id)){
+                        cout<<"ID Invalido\n";
+                    }else{
+                        cout<<"Prioridad invalida. Debe estar entre 1 y 50.\n";
+                    }
+                    system("pause");
                     break;
                 }
+                priority = getPriority(lista, id);                
+                cout<<"Nueva prioridad: "; cin>>newPriority;
                 if(newPriority>priority){
                     diferencia = newPriority - priority;
                     if(isFull(diferencia)){

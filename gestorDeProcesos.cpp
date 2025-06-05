@@ -1,4 +1,5 @@
 #include <iostream>
+#include <limits>
 using namespace std;
 #define MAX 5
 
@@ -22,26 +23,10 @@ struct Nodo {
 };
 
 // Pila
+#define MEM 51
+int pila[MEM];
+
 int top = -1;
-
-struct Pila{
-    int id;
-    string proceso;
-    
-    // Constructor por defecto
-    Pila(){
-        id = 0;
-        proceso = "";
-    }
-    
-    // Constructor parametrizado
-    Pila(int nID, string nProceso){
-        id = nID;
-        proceso = nProceso;
-    }
-};
-
-Pila* memoria[MAX];
 
 // Cola
 int frente = -1;
@@ -61,23 +46,17 @@ struct NodoH{
     int id;
     string proceso;
     NodoH* next;
-    NodoH(){
-        id = 0;
-        proceso = "";
-        next = NULL;
-    }
-    NodoH(int nID, string nProceso){
-        id = nID;
-        proceso = nProceso;
-        next = NULL;
-    }
+    NodoH(){ id = 0; proceso = ""; next = NULL; }
+    NodoH(int nID, string nProceso){ id = nID; proceso = nProceso; next = NULL; }
 };
 
-// =====================
-// GESTOR DE PROCESOS
-// =====================
+Nodo* lista = NULL;
+NodoH* historial = NULL;
+int globalID = 0;
 
-// FUNCIONES
+// =====================
+// FUNCIONES DE LISTA
+// =====================
 
 void addToList(Nodo*& lista, int id, string name, int priori){
     Nodo* nuevoNodo = new Nodo(id, name, priori);
@@ -85,10 +64,7 @@ void addToList(Nodo*& lista, int id, string name, int priori){
         lista = nuevoNodo;
     }else{
         Nodo* temp = lista;
-        while (temp->next != NULL)
-        {   
-            temp = temp->next;
-        }
+        while (temp->next != NULL){ temp = temp->next; }
         temp->next = nuevoNodo;
     }
 }
@@ -98,203 +74,174 @@ void showList(Nodo* inicio){
     while(temp != NULL){
         cout<<"ID: "<<temp->id<<"\n";
         cout<<"Proceso: "<<temp->proceso<<"\n";
+        cout<<"Prioridad: "<<temp->priority<<"\n";
         temp = temp->next;
     }
     cout<<endl;
 }
-void deleteToList(Nodo*& lista, int deleteId){
-    if(lista == NULL){
-        cout<<"La lista está vacia";
-        return;
-    }
-
-    // Creamos los nodos temporal y anterior para reoganizar la lista
+string getElement(Nodo*lista, int searchId){
     Nodo* temp = lista;
-    Nodo* anterior = NULL;
-
-    // Caso en el que el primer nodo es el eliminado (no requiere de anterior)
-    if(temp->id == deleteId){
-        lista = temp->next;
-        cout<<"Nodo eliminado \n";
-        cout<<"ID: "<<temp->id<<"\n";
-        cout<<"Proceso: "<<temp->proceso<<"\n";
-        delete temp; // Liberando espacio de memoria
-        return;
-    }
-    // Buscando nodo por ID y el nodo anterior a ese
-    while(temp != NULL && temp->id != deleteId){
-        anterior = temp;
-        temp = temp->next;
-    }
-    
-    if(temp == NULL){
-        cout<<"Id no encontrado \n";
-        return;
-    }
-
-    // Reenlazando el nodo y eliminando
-    anterior->next = temp->next;
-    cout<<"Nodo eliminado \n";
-    cout<<"ID: "<<temp->id<<"\n";
-    cout<<"Proceso: "<<temp->proceso<<"\n";
-    delete temp;
-}
-
-void searchToList(Nodo* lista, int searchId){
-    Nodo* temp = lista;
-
-    if(temp == NULL){
-        cout<<"La lista está vacia \n";
-        return;
-    }
-
     while(temp != NULL && temp->id != searchId){
         temp = temp->next;
     }
+    return temp->proceso;
+}
 
-    if (temp == NULL){
-        cout<<"ID no encontrado \n";
+int getPriority(Nodo*lista, int searchId){
+    Nodo* temp = lista;
+    while(temp != NULL && temp->id != searchId){
+        temp = temp->next;
+    }
+    return temp->priority;
+}
+
+void deleteToList(Nodo*& lista, int deleteId){
+    if(lista == NULL){ cout<<"La lista esta vacia\n"; return; }
+    Nodo* temp = lista;
+    Nodo* anterior = NULL;
+    if(temp->id == deleteId){
+        lista = temp->next;
+        delete temp;
         return;
     }
+    while(temp != NULL && temp->id != deleteId){ anterior = temp; temp = temp->next; }
+    if(temp == NULL){ cout<<"Id no encontrado\n"; return; }
+    anterior->next = temp->next;
+    delete temp;
+}
 
-    cout<<"ID: "<<temp->id<<"\n";
-    cout<<"Proceso: "<<temp->proceso<<"\n";
+void searchToList(Nodo* lista, string name){
+    Nodo* temp = lista;
+    bool found = false;
+    while(temp != NULL){
+        if(temp->proceso == name){
+            cout<<"ID: "<<temp->id<<"\nProceso: "<<temp->proceso<<"\nPrioridad: "<<temp->priority<<"\n";
+            found = true;
+        }
+        temp = temp->next;
+    }
+    if(!found){ cout<<"Nombre de proceso no encontrado\n"; }
+}
+bool isExist(Nodo* lista, int searchId){
+    Nodo* temp = lista;
+    while(temp != NULL && temp->id != searchId){
+        temp = temp->next;
+    }
+    if (temp == NULL){
+        return false;
+    }
+    return true;
 }
 
 void modifyList(Nodo*& lista, int modifyId, int newPriority){
-
-    if(newPriority < 1 || newPriority > 10){
-        cout<<"Prioridad no valida. Solo valores de 1 a 10 \n";
-        return;
-    }
-
+    if(newPriority < 1 || newPriority > 50){ cout<<"Prioridad no valida\n"; return; }
     Nodo* temp = lista;
-
-    while(temp != NULL && temp->id != modifyId){
-        temp = temp->next;
-    }
-
-    if(temp == NULL){
-        cout<<"ID no encontrado \n";
-        return;
-    }
-
+    while(temp != NULL && temp->id != modifyId){ temp = temp->next; }
+    if(temp == NULL){ cout<<"ID no encontrado\n"; return; }
     temp->priority = newPriority;
-
-    cout<<"ID: "<<temp->id<<"\n";
-    cout<<"Proceso: "<<temp->proceso<<"\n";
-    cout<<"Nueva prioridad: "<<temp->priority<<"\n";
-    
 }
 
 // =====================
-//    GESTOR DE CPU
+// FUNCIONES DE COLA
 // =====================
 
-// FUNCIONES
-bool estaVacia(){
-    return frente == - 1;
-}
-
-bool estaLlena(){
-    return final == MAX - 1;
-}
+bool estaVacia(){ return frente == - 1; }
+bool estaLlena(){ return final == MAX - 1; }
 
 void encolarCPU(Cola proceso){
-    if(estaLlena()){
-        cout<<"La cola del CPU está llena \n";
-    }else{
-        if(frente == -1){
-            frente = 0;
-        }
+    if(estaLlena()){ cout<<"La cola del CPU esta llena\n"; }
+    else{
+        if(frente == -1) frente = 0;
         final++;
         cola[final] = proceso;
-        cout<<"Proceso: "<<proceso.proceso<<" encolado."<<"\n"<<endl;
+        cout<<"Proceso: "<<proceso.proceso<<" encolado.\n";
     }
 }
 
 void desencolarCPU(){
-    if(estaVacia()){
-        cout<<"La cola del CPU está vacía\n";
-    }else{
-        cout<<"Proceso: "<<cola[frente].proceso<<" desencolado."<<endl;
+    if(estaVacia()){ cout<<"La cola del CPU esta vacia\n"; }
+    else{
+        cout<<"Proceso: "<<cola[frente].proceso<<" desencolado.\n";
         frente++;
-        if(frente > final){
-            frente = final = -1;
-        }
+        if(frente > final) frente = final = -1;
     }
 }
 
 void showCola(){
-    if(estaVacia()){
-        cout<<"La cola del CPU está vacía. \n";
-    }else{
-        cout<<"Procesos en la cola del CPU. \n";
+    if(estaVacia()){ cout<<"La cola del CPU esta vacia.\n"; }
+    else{
         for(int i = frente; i <= final; i++){
-            cout<<"proceso: "<<cola[i].proceso<<"\n";
-            cout<<"Prioridad: "<<cola[i].priority<<"\n";
+            cout<<"Proceso: "<<cola[i].proceso<<"\nPrioridad: "<<cola[i].priority<<"\n";
         }
-        cout<<endl;
     }
 }
 
 // =====================
-//   GESTOR DE MEMORIA
+// FUNCIONES DE PILA
 // =====================
 
-// FUNCIONES
-void addToPila(int id, string proceso){
-    Pila* element = new Pila(id, proceso);
-    if(top < MAX - 1){
-        top++;
-        memoria[top] = element;
+float getMemory(){
+    return (top+1)/MEM;
+}
+
+bool isFull(int prioridad){
+    if(top+prioridad < MEM - 1){
+        return false;
+    }
+    else{
+        return true;
+    }
+}
+
+void addToPila(int prioridad){
+    if(!isFull(prioridad)){
+        for(int i = 0; i<=prioridad; i++){
+            top++;
+            pila[top] = 1;
+        }
     }else{
-        cout<<"La memoria esta llena \n";
+        cout<<"Memoria insuficiente\n";
     }
 }
 
-void removeFromPila(){
+void removeFromPila(int prioridad){
     if(top == -1){
-        cout<<"No hay mas procesos en la memoria \n";
+        cout<<"Memoria Vacia\n";
     }else{
-        cout<<"Proceso retirado de la memoria: \n";
-        cout<<"-> "<<memoria[top]->proceso<<"\n";
-        delete memoria[top];
-        top--;
+        cout<<"Liberando Memoria\n";
+        for(int i = 0; i<=prioridad; i++){
+            pila[top] = 0;
+            top--;
+        }
     }
 }
 
 // =====================
-// HISTORIAL DE PROCESOS
+// FUNCIONES DE HISTORIAL
 // =====================
-
-// FUNCIONES
 
 void addToHist(NodoH*& lista, string proceso){
     nElements++;
     NodoH* nuevoNodo = new NodoH(nElements, proceso);
-    if(lista == NULL){
-        lista = nuevoNodo;
-    }else{
+    if(lista == NULL){ lista = nuevoNodo; }
+    else{
         NodoH* temp = lista;
-        while(temp->next != NULL){
-            temp = temp->next;
-        }
+        while(temp->next != NULL){ temp = temp->next; }
         temp->next = nuevoNodo;
     }
 }
+
 void showHist(NodoH* lista){
     NodoH* temp = lista;
     while(temp != NULL){
         cout<<"*************\n";
-        cout<<"ID: "<<temp->id<<"\n";
-        cout<<"Proceso: "<<temp->proceso<<"\n";
+        cout<<"ID: "<<temp->id<<"\nProceso: "<<temp->proceso<<"\n";
         temp = temp->next;
     }
 }
 
 // =====================
-//          MENU
+// MENÚS
 // =====================
 
 void menu(){
@@ -305,22 +252,177 @@ void menu(){
     cout<<"-----------------------------------\n";
     cout<<"4: Mostrar procesos activos\n";
     cout<<"5: Mostrar cola de tareas\n";
-    cout<<"6: Mostrar pila activa (memoria)\n";
+    cout<<"6: Mostrar historial\n";
     cout<<"0: Salir\n";
 }
-void menu2(){
-    cout<<"******* PROCESOS PENDIENTES *******\n";
-    cout<<"1: Asignar prioridad al siguiente proceso (Baja - Media - Alta)\n";
-    cout<<"0: Volver\n";
+
+void limpiarEntrada(){
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 }
+
+void menu2(){
+    int opcion;
+    do{
+        system("cls");
+        cout<<"******* PROCESOS PENDIENTES *******\n";
+        cout<<"1: Asignar prioridad al siguiente proceso (1-50)\n";
+        cout<<"0: Volver\n";
+        cin>>opcion;
+        if(cin.fail()){
+            limpiarEntrada();
+            cout<<"Entrada invalida. Intente de nuevo.\n";
+            continue;
+        }
+        switch(opcion){
+            case 1:
+                if(!estaVacia()){
+                    int prioridad;
+                    cout<<"Ingrese prioridad para proceso: ";
+                    cin>>prioridad;
+                    if(cin.fail() || prioridad < 1 || prioridad > 50){
+                        limpiarEntrada();
+                        cout<<"Prioridad inválida. Debe estar entre 1 y 50.\n";
+                        system("pause");
+                        break;
+                    }
+                    if(isFull(prioridad)){
+                       cout<<"Memoria insoficiente\n"; 
+                    }else{
+                        Cola proc = cola[frente];
+                        proc.priority = prioridad;
+                        addToList(lista, proc.id, proc.proceso, prioridad);
+                        addToPila(prioridad);
+                        desencolarCPU();
+                    }
+                }else{
+                    cout<<"No hay procesos pendientes\n";
+                }
+                system("pause");
+                break;
+            case 0: break;
+            default: cout<<"Opcion invalida\n";
+        }
+    }while(opcion != 0);
+}
+
 void menu3(){
-    cout<<"******* PROCESOS EN EJECUCION *******\n";
-    cout<<"1: Finalizar proceso\n";
-    cout<<"2: Buscar proceso\n";
-    cout<<"3: Editar prioridad\n";
-    cout<<"0: Volver\n";
+    int opcion;
+    do{
+        system("cls");
+        cout<<"******* PROCESOS EN EJECUCION *******\n";
+        cout<<"1: Finalizar proceso\n";
+        cout<<"2: Buscar proceso por nombre\n";
+        cout<<"3: Editar prioridad\n";
+        cout<<"0: Volver\n";
+        cin>>opcion;
+        if(cin.fail()){
+            limpiarEntrada();
+            cout<<"Entrada inválida. Intente de nuevo.\n";
+            continue;
+        }
+        switch(opcion){
+            case 1: {
+                string name;
+                int prioridad;
+                int id;
+                cout<<"Procesos:\n";
+                showList(lista);
+                cout<<"--------------\n";
+                cout<<"Ingrese ID a finalizar: ";
+                cin>>id;
+                if(!isExist(lista, id)){
+                    limpiarEntrada();
+                    cout<<"ID invalido\n";
+                    system("pause");
+                    break;
+                }
+                name = getElement(lista, id);
+                prioridad = getPriority(lista, id);
+                deleteToList(lista, id);
+                removeFromPila(prioridad); // Enviar la prioridad
+                addToHist(historial, name);
+                system("pause");
+                break;
+            }
+            case 2: {
+                string name;
+                cout<<"Ingrese nombre del proceso: ";
+                cin>>name;
+                searchToList(lista, name);
+                system("pause");
+                break;
+            }
+            case 3: {
+                int id, newPriority, priority, diferencia;
+                cout<<"Procesos:\n";
+                showList(lista);
+                cout<<"--------------\n";
+                cout<<"ID a modificar: "; cin>>id;
+                if(!isExist(lista, id)  || newPriority < 1 || newPriority > 50){
+                    limpiarEntrada();
+                    if(!isExist(lista, id)){
+                        cout<<"ID Invalido\n";
+                    }else{
+                        cout<<"Prioridad invalida. Debe estar entre 1 y 50.\n";
+                    }
+                    system("pause");
+                    break;
+                }
+                priority = getPriority(lista, id);                
+                cout<<"Nueva prioridad: "; cin>>newPriority;
+                if(newPriority>priority){
+                    diferencia = newPriority - priority;
+                    if(isFull(diferencia)){
+                        cout<<"Memoria insuficiente\n";
+                    }
+                }else{
+                    diferencia = priority-newPriority;
+                    removeFromPila(priority);
+                    addToPila(newPriority);
+                    modifyList(lista, id, newPriority);
+                }
+                system("pause");
+                break;
+            }
+            case 0: break;
+            default: cout<<"Opcion invalida\n";
+        }
+    }while(opcion != 0);
 }
 
 int main(){
-
+    int opcion;
+    do{
+        menu();
+        cin>>opcion;
+        if(cin.fail()){
+            limpiarEntrada();
+            cout<<"Entrada invalida. Intente de nuevo.\n";
+            continue;
+        }
+        switch(opcion){
+            case 1: {
+                globalID++;
+                string name;
+                cout<<"Ingrese nombre del proceso: ";
+                cin>>name;
+                Cola nuevo = {globalID, name, 0};
+                encolarCPU(nuevo);
+                break;
+            }
+            case 2: menu2(); break;
+            case 3: menu3(); break;
+            case 4: showList(lista); break;
+            case 5: showCola(); break;
+            case 6: showHist(historial); break;
+            case 0: cout<<"Saliendo...\n"; break;
+            default: cout<<"Opción invalida\n";
+        }
+        if(opcion!=0){
+            system("pause");
+        }
+        system("cls");
+    }while(opcion != 0);
+    return 0;
 }
