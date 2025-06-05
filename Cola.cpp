@@ -6,13 +6,13 @@ using namespace std;
 int frente = -1;
 int final = -1;
 
-struct Nodo{
+struct Cola{
     int id;
     string proceso;
     int priority;
 };
 
-Nodo cola[MAX];
+Cola cola[MAX];
 bool estaVacia(){
     return frente == - 1;
 }
@@ -21,7 +21,7 @@ bool estaLlena(){
     return final == MAX - 1;
 }
 
-void encolarCPU(Nodo proceso){
+void encolarCPU(Cola proceso){
     if(estaLlena()){
         cout<<"La cola del CPU está llena \n";
     }else{

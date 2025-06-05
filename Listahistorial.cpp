@@ -2,37 +2,37 @@
 using namespace std;
 
 int nElements = 0;
-struct Nodo{
+struct NodoH{
     int id;
     string proceso;
-    Nodo* next;
-    Nodo(){
+    NodoH* next;
+    NodoH(){
         id = 0;
         proceso = "";
         next = NULL;
     }
-    Nodo(int nID, string nProceso){
+    NodoH(int nID, string nProceso){
         id = nID;
         proceso = nProceso;
         next = NULL;
     }
 };
 
-void addToHist(Nodo*& lista, string proceso){
+void addToHist(NodoH*& lista, string proceso){
     nElements++;
-    Nodo* nuevoNodo = new Nodo(nElements, proceso);
+    NodoH* nuevoNodo = new NodoH(nElements, proceso);
     if(lista == NULL){
         lista = nuevoNodo;
     }else{
-        Nodo* temp = lista;
+        NodoH* temp = lista;
         while(temp->next != NULL){
             temp = temp->next;
         }
         temp->next = nuevoNodo;
     }
 }
-void showHist(Nodo* lista){
-    Nodo* temp = lista;
+void showHist(NodoH* lista){
+    NodoH* temp = lista;
     while(temp != NULL){
         cout<<"*************\n";
         cout<<"ID: "<<temp->id<<"\n";
@@ -41,7 +41,7 @@ void showHist(Nodo* lista){
     }
 }
 int main(){
-    Nodo* lista = NULL;
+    NodoH* lista = NULL;
     addToHist(lista, "Agregado");
     showHist(lista);
     system("pause");
