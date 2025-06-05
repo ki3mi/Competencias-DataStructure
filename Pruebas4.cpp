@@ -324,6 +324,9 @@ void menu3(){
                 string name;
                 int prioridad;
                 int id;
+                cout<<"Procesos:\n";
+                showList(lista);
+                cout<<"--------------\n";
                 cout<<"Ingrese ID a finalizar: ";
                 cin>>id;
                 if(!isExist(lista, id)){
@@ -347,6 +350,9 @@ void menu3(){
             }
             case 3: {
                 int id, newPriority, priority, diferencia;
+                cout<<"Procesos:\n";
+                showList(lista);
+                cout<<"--------------\n";
                 cout<<"ID a modificar: "; cin>>id;
                 priority = getPriority(lista, id);                
                 cout<<"Nueva prioridad: "; cin>>newPriority;
