@@ -98,6 +98,7 @@ void showList(Nodo* inicio){
     while(temp != NULL){
         cout<<"ID: "<<temp->id<<"\n";
         cout<<"Proceso: "<<temp->proceso<<"\n";
+        cout<<"Prioridad: "<<temp->priority<<"\n";
         temp = temp->next;
     }
     cout<<endl;
@@ -231,6 +232,7 @@ void showCola(){
     }else{
         cout<<"Procesos en la cola del CPU. \n";
         for(int i = frente; i <= final; i++){
+            cout<<"---------------------------------\n";
             cout<<"proceso: "<<cola[i].proceso<<"\n";
             cout<<"Prioridad: "<<cola[i].priority<<"\n";
         }
@@ -306,6 +308,7 @@ void menu(){
     cout<<"4: Mostrar procesos activos\n";
     cout<<"5: Mostrar cola de tareas\n";
     cout<<"6: Mostrar pila activa (memoria)\n";
+    cout<<"7: Mostrar Historial\n";
     cout<<"0: Salir\n";
 }
 void menu2(){
@@ -321,6 +324,97 @@ void menu3(){
     cout<<"0: Volver\n";
 }
 
-int main(){
+// Lista principal de procesos activos
+Nodo* listaActiva = NULL;
+NodoH* historial = NULL;
+int idGlobal = 1; // Para generar IDs únicos
 
+int main() {
+    int opcion;
+    bool ejecutando = true;
+
+    while (ejecutando) {
+        menu();
+        cout << "Seleccione una opcion: ";
+        cin >> opcion;
+
+        switch(opcion){
+            case 1: {
+                // Agregar proceso a la cola
+                string nombre;
+                cout << "Nombre del proceso: ";
+                cin.ignore(); getline(cin, nombre);
+                Cola nuevo = {idGlobal++, nombre, 0};
+                encolarCPU(nuevo);
+                break;
+            }
+            case 2: {
+                if (!estaVacia()) {
+                    Cola proceso = cola[frente];
+                    desencolarCPU();
+                    addToPila(proceso.id, proceso.proceso);
+                    addToList(listaActiva, proceso.id, proceso.proceso, proceso.priority);
+                    cout << "Proceso " << proceso.proceso << " movido a ejecucion." << endl;
+                }
+                break;
+            }
+            case 3: {
+                int sub;
+                menu3();
+                cout << "Seleccione una opcion: ";
+                cin >> sub;
+                switch(sub){
+                    case 1: {
+                        int id;
+                        cout << "ID del proceso a finalizar: ";
+                        cin >> id;
+                        // Buscar el nombre para historial
+                        Nodo* temp = listaActiva;
+                        string nombre = "";
+                        while (temp != NULL && temp->id != id) temp = temp->next;
+                        if (temp != NULL) nombre = temp->proceso;
+                        deleteToList(listaActiva, id);
+                        removeFromPila();
+                        addToHist(historial, nombre);
+                        break;
+                    }
+                    case 2: {
+                        int id;
+                        cout << "ID a buscar: ";
+                        cin >> id;
+                        searchToList(listaActiva, id);
+                        break;
+                    }
+                    case 3: {
+                        int id, prioridad;
+                        cout << "ID a modificar: "; cin >> id;
+                        cout << "Nueva prioridad (1-10): "; cin >> prioridad;
+                        modifyList(listaActiva, id, prioridad);
+                        break;
+                    }
+                }
+                break;
+            }
+            case 4:
+                showList(listaActiva);
+                break;
+            case 5:
+                showCola();
+                break;
+            case 6:
+                for(int i = 0; i <= top; i++){
+                    cout << "ID: " << memoria[i]->id << ", Proceso: " << memoria[i]->proceso << endl;
+                }
+                break;
+            case 0:
+                ejecutando = false;
+                cout << "Saliendo del programa...\n";
+                break;
+            default:
+                cout << "Opcion no valida.\n";
+        }
+        system("pause");
+        system("cls");
+    }
+    return 0;
 }
