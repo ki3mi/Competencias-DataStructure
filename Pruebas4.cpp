@@ -263,8 +263,8 @@ void limpiarEntrada(){
 
 void menu2(){
     int opcion;
-    system("cls");
     do{
+        system("cls");
         cout<<"******* PROCESOS PENDIENTES *******\n";
         cout<<"1: Asignar prioridad al siguiente proceso (1-50)\n";
         cout<<"0: Volver\n";
@@ -297,6 +297,7 @@ void menu2(){
                 }else{
                     cout<<"No hay procesos pendientes\n";
                 }
+                system("pause");
                 break;
             case 0: break;
             default: cout<<"Opcion invalida\n";
@@ -306,8 +307,8 @@ void menu2(){
 
 void menu3(){
     int opcion;
-    system("cls");
     do{
+        system("cls");
         cout<<"******* PROCESOS EN EJECUCION *******\n";
         cout<<"1: Finalizar proceso\n";
         cout<<"2: Buscar proceso por nombre\n";
@@ -339,6 +340,7 @@ void menu3(){
                 deleteToList(lista, id);
                 removeFromPila(prioridad); // Enviar la prioridad
                 addToHist(historial, name);
+                system("pause");
                 break;
             }
             case 2: {
@@ -346,6 +348,7 @@ void menu3(){
                 cout<<"Ingrese nombre del proceso: ";
                 cin>>name;
                 searchToList(lista, name);
+                system("pause");
                 break;
             }
             case 3: {
@@ -372,6 +375,7 @@ void menu3(){
                     addToPila(newPriority);
                     modifyList(lista, id, newPriority);
                 }
+                system("pause");
                 break;
             }
             case 0: break;
