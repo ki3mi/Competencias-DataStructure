@@ -23,7 +23,7 @@ struct Nodo {
 };
 
 // Pila
-#define MEM 50
+#define MEM 51
 int pila[MEM];
 
 int top = -1;
@@ -96,7 +96,7 @@ int getPriority(Nodo*lista, int searchId){
 }
 
 void deleteToList(Nodo*& lista, int deleteId){
-    if(lista == NULL){ cout<<"La lista está vacía\n"; return; }
+    if(lista == NULL){ cout<<"La lista esta vacia\n"; return; }
     Nodo* temp = lista;
     Nodo* anterior = NULL;
     if(temp->id == deleteId){
@@ -122,9 +122,19 @@ void searchToList(Nodo* lista, string name){
     }
     if(!found){ cout<<"Nombre de proceso no encontrado\n"; }
 }
+bool isExist(Nodo* lista, int searchId){
+    Nodo* temp = lista;
+    while(temp != NULL && temp->id != searchId){
+        temp = temp->next;
+    }
+    if (temp == NULL){
+        return false;
+    }
+    return true;
+}
 
 void modifyList(Nodo*& lista, int modifyId, int newPriority){
-    if(newPriority < 1 || newPriority > 50){ cout<<"Prioridad no válida\n"; return; }
+    if(newPriority < 1 || newPriority > 50){ cout<<"Prioridad no valida\n"; return; }
     Nodo* temp = lista;
     while(temp != NULL && temp->id != modifyId){ temp = temp->next; }
     if(temp == NULL){ cout<<"ID no encontrado\n"; return; }
@@ -139,7 +149,7 @@ bool estaVacia(){ return frente == - 1; }
 bool estaLlena(){ return final == MAX - 1; }
 
 void encolarCPU(Cola proceso){
-    if(estaLlena()){ cout<<"La cola del CPU está llena\n"; }
+    if(estaLlena()){ cout<<"La cola del CPU esta llena\n"; }
     else{
         if(frente == -1) frente = 0;
         final++;
@@ -149,7 +159,7 @@ void encolarCPU(Cola proceso){
 }
 
 void desencolarCPU(){
-    if(estaVacia()){ cout<<"La cola del CPU está vacía\n"; }
+    if(estaVacia()){ cout<<"La cola del CPU esta vacía\n"; }
     else{
         cout<<"Proceso: "<<cola[frente].proceso<<" desencolado.\n";
         frente++;
@@ -253,14 +263,15 @@ void limpiarEntrada(){
 
 void menu2(){
     int opcion;
+    system("cls");
     do{
         cout<<"******* PROCESOS PENDIENTES *******\n";
-        cout<<"1: Asignar prioridad al siguiente proceso (1-10)\n";
+        cout<<"1: Asignar prioridad al siguiente proceso (1-50)\n";
         cout<<"0: Volver\n";
         cin>>opcion;
         if(cin.fail()){
             limpiarEntrada();
-            cout<<"Entrada inválida. Intente de nuevo.\n";
+            cout<<"Entrada invalida. Intente de nuevo.\n";
             continue;
         }
         switch(opcion){
@@ -271,7 +282,7 @@ void menu2(){
                     cin>>prioridad;
                     if(cin.fail() || prioridad < 1 || prioridad > 50){
                         limpiarEntrada();
-                        cout<<"Prioridad inválida. Debe estar entre 1 y 10.\n";
+                        cout<<"Prioridad inválida. Debe estar entre 1 y 50.\n";
                         break;
                     }
                     if(isFull(prioridad)){
@@ -295,6 +306,7 @@ void menu2(){
 
 void menu3(){
     int opcion;
+    system("cls");
     do{
         cout<<"******* PROCESOS EN EJECUCION *******\n";
         cout<<"1: Finalizar proceso\n";
@@ -314,9 +326,9 @@ void menu3(){
                 int id;
                 cout<<"Ingrese ID a finalizar: ";
                 cin>>id;
-                if(cin.fail()){
+                if(!isExist(lista, id)){
                     limpiarEntrada();
-                    cout<<"ID inválido\n";
+                    cout<<"ID invalido\n";
                     break;
                 }
                 name = getElement(lista, id);
@@ -338,19 +350,22 @@ void menu3(){
                 cout<<"ID a modificar: "; cin>>id;
                 priority = getPriority(lista, id);                
                 cout<<"Nueva prioridad: "; cin>>newPriority;
-                if(newPriority > priority){
-                    diferencia = newPriority - priority;
-                }else{
-                    diferencia = priority - newPriority;
-                }                
                 if(cin.fail() || newPriority < 1 || newPriority > 50){
                     limpiarEntrada();
-                    cout<<"Prioridad inválida. Debe estar entre 1 y 50.\n";
+                    cout<<"Prioridad invalida. Debe estar entre 1 y 50.\n";
                     break;
                 }
-                modifyList(lista, id, newPriority);
-                removeFromPila(priority);
-                addToPila(diferencia);
+                if(newPriority>priority){
+                    diferencia = newPriority - priority;
+                    if(isFull(diferencia)){
+                        cout<<"Memoria insuficiente\n";
+                    }
+                }else{
+                    diferencia = priority-newPriority;
+                    removeFromPila(priority);
+                    addToPila(newPriority);
+                    modifyList(lista, id, newPriority);
+                }
                 break;
             }
             case 0: break;
@@ -366,7 +381,7 @@ int main(){
         cin>>opcion;
         if(cin.fail()){
             limpiarEntrada();
-            cout<<"Entrada inválida. Intente de nuevo.\n";
+            cout<<"Entrada invalida. Intente de nuevo.\n";
             continue;
         }
         switch(opcion){
@@ -385,7 +400,7 @@ int main(){
             case 5: showCola(); break;
             case 6: showHist(historial); break;
             case 0: cout<<"Saliendo...\n"; break;
-            default: cout<<"Opción inválida\n";
+            default: cout<<"Opción invalida\n";
         }
         if(opcion!=0){
             system("pause");
