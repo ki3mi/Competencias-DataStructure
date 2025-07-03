@@ -125,5 +125,79 @@ void modifyList(Nodo*& lista, int modifyId, int newPriority){
     
 }
 int main(){
+    Nodo* lista = NULL;
+    int opcion;
 
+    do {
+        cout << "\n--- MENU DE OPCIONES ---\n";
+        cout << "1. Agregar proceso\n";
+        cout << "2. Mostrar procesos\n";
+        cout << "3. Eliminar proceso\n";
+        cout << "4. Buscar proceso\n";
+        cout << "5. Modificar prioridad de proceso\n";
+        cout << "6. Salir\n";
+        cout << "Seleccione una opción: ";
+        cin >> opcion;
+
+        switch(opcion){
+            case 1: {
+                int id, priority;
+                string nombre;
+                cout << "Ingrese ID del proceso: ";
+                cin >> id;
+                cout << "Ingrese nombre del proceso: ";
+                cin.ignore(); // limpiar el buffer
+                getline(cin, nombre);
+                cout << "Ingrese prioridad (1 a 10): ";
+                cin >> priority;
+                if(priority >= 1 && priority <= 10){
+                    addToList(lista, id, nombre, priority);
+                    cout << "Proceso agregado.\n";
+                } else {
+                    cout << "Prioridad no válida. Debe ser entre 1 y 10.\n";
+                }
+                break;
+            }
+
+            case 2:
+                showList(lista);
+                break;
+
+            case 3: {
+                int id;
+                cout << "Ingrese ID del proceso a eliminar: ";
+                cin >> id;
+                deleteToList(lista, id);
+                break;
+            }
+
+            case 4: {
+                int id;
+                cout << "Ingrese ID del proceso a buscar: ";
+                cin >> id;
+                searchToList(lista, id);
+                break;
+            }
+
+            case 5: {
+                int id, newPriority;
+                cout << "Ingrese ID del proceso a modificar: ";
+                cin >> id;
+                cout << "Ingrese nueva prioridad (1 a 10): ";
+                cin >> newPriority;
+                modifyList(lista, id, newPriority);
+                break;
+            }
+
+            case 6:
+                cout << "Saliendo del programa.\n";
+                break;
+
+            default:
+                cout << "Opción inválida. Intente de nuevo.\n";
+        }
+
+    } while(opcion != 6);
+
+    return 0;
 }
